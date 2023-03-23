@@ -73,6 +73,7 @@ func (c *Client) DeleteClient() {
 // IsOnline 判断客户端是否在线, 通过判断Socket是否为nil和心跳时间来判断
 func (c *Client) IsOnline() bool {
 	// 断开连接或心跳超时, 则认为不在线
+
 	// todo: 判断心跳超时, 先不做
 	if c.Socket == nil {
 		return false

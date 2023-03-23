@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 import "github.com/gorilla/websocket"
 
@@ -21,10 +22,41 @@ var WsUpgrader = websocket.Upgrader{
 
 func WsHandler(c *gin.Context) {
 	// todo: auth token, 获取AppID和UserID
-	// todo: 判断在线等操作
-	var AppID uint = 1
+	Account := c.PostForm("account")
+	Password := c.PostForm("password")
+	AppIDRaw := c.PostForm("app_id")
 	var UserID uint = 1
 
+	if Account == "" || Password == "" || AppIDRaw == "" {
+		Token, err := c.Cookie("token")
+		if err != nil {
+			Response(c, http.StatusUnauthorized, "", nil)
+			return
+		}
+
+		// todo: 解析token, 获取AppID和UserID
+		logrus.Infof("api:WsHandler, Token:%v", Token)
+		return
+	}
+
+	AppID, err := strconv.ParseInt(AppIDRaw, 10, 64)
+	if err != nil {
+		Response(c, http.StatusBadRequest, "", nil)
+		return
+	}
+	// todo: 判断AppID是否存在
+
+	// 判断在线, 如果已经在线, 则断开旧连接, 重新登录
+	if client.CM.IsOnline(uint(AppID), UserID) {
+		// 断开并清理旧连接
+		cli := client.CM.GetClient(uint(AppID), UserID)
+		client.LogoutEvent(cli)
+	}
+
+	// todo: 在升级前, 生成token, 返回给客户端
+	Response(c, http.StatusOK, "", nil)
+
+	// 升级为websocket连接
 	ClientIP := c.ClientIP()
 	con, err := WsUpgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -33,8 +65,6 @@ func WsHandler(c *gin.Context) {
 	}
 	logrus.Infof("controller:WsHandler, Client IP:%v", ClientIP)
 
-	// 登录成功, 创建连接
-	go client.CM.ClientLogin(ClientIP, AppID, UserID, con)
-
-	// todo:返回前端
+	// 创建连接
+	client.CM.ClientLogin(ClientIP, uint(AppID), UserID, con)
 }

@@ -7,6 +7,7 @@ type Group struct {
 	gorm.Model
 	OwnerID      uint `gorm:"group_id"`
 	Name         string
+	Avatar       string
 	Introduction string
 	MemNum       uint
 }
