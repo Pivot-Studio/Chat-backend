@@ -11,3 +11,7 @@ func GetMemberGroupID(UserID uint) (GroupID []uint, err error) {
 		Find(&GroupID).Error
 	return
 }
+
+func (rs *RdbService) CreateGroup(group *model.Group) error {
+	return rs.tx.Create(&group).Error
+}

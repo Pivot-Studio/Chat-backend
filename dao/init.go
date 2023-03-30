@@ -2,12 +2,20 @@ package dao
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var Mysql *gorm.DB
+var (
+	Mysql *gorm.DB
+	RS    *RdbService
+)
+
+type RdbService struct {
+	tx *gorm.DB
+}
 
 func init() {
 	// init mysql
@@ -28,5 +36,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	RS.tx = Mysql
 
 }

@@ -1,9 +1,25 @@
 package controller
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 var Engine *gin.Engine
 
 func Router(r *gin.Engine) {
-	r.GET("/login", WsHandler)
+	api := r.Group("/api")
+	{
+		user := api.Group("/user")
+		{
+			user.GET("/login", WsHandler)
+			user.POST("/register", Register)
+		}
+
+		group := api.Group("/group")
+		{
+			group.POST("/creat", CreatGroup)
+		}
+
+	}
+
 }
