@@ -17,7 +17,7 @@ func Router(r *gin.Engine) {
 
 		group := api.Group("/group")
 		{
-			group.POST("/creat", CreatGroup)
+			group.POST("/create", CreatGroup)
 		}
 
 	}
