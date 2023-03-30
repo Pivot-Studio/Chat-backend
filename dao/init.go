@@ -2,19 +2,15 @@ package dao
 
 import (
 	"fmt"
-
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-var (
-	Mysql *gorm.DB
-	RS    *RdbService
-)
+var DB *DBService
 
-type RdbService struct {
-	tx *gorm.DB
+type DBService struct {
+	mysql *gorm.DB
 }
 
 func init() {
@@ -30,13 +26,12 @@ func init() {
 		"%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local",
 		MysqlUsername, MysqlPassword, MysqlHost, MysqlPort, MysqlDatabase)
 
-	Mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	DB.mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true, // 禁用默认事务
 	})
+
 	if err != nil {
 		panic(err)
 	}
-
-	RS.tx = Mysql
 
 }
