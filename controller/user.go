@@ -10,16 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// wjc
-type registerParam struct {
-	Username       string `form:"username" binding:"required"`
-	Password       string `form:"password" binding:"required"`
-	Email          string `form:"email" binding:"required"`
-	InvitationCode string `form:"invitation_code"`
-}
-
 func Register(c *gin.Context) {
-	param := &registerParam{}
+	param := &model.RegisterParam{}
 	err := c.ShouldBind(param)
 	if err != nil {
 		msg := "参数解析失败"
@@ -33,22 +25,14 @@ func Register(c *gin.Context) {
 
 	//密码加密
 	passwordHash, err := common.EncodePassword(param.Password)
-
+	param.Password = passwordHash
 	if err != nil {
 		logrus.Errorf("[controller.user.Register] %v", err)
 		Response(c, http.StatusBadRequest, "密码Encode失败,注册失败", nil)
 		return
 	}
 
-	//写入Mysql数据库
-	err = service.Register(&model.User{
-		Username:       param.Username,
-		Email:          param.Email,
-		Avatar:         "",
-		InvitationCode: param.InvitationCode,
-		Password:       passwordHash,
-	})
-
+	err = service.Register(param)
 	if err != nil {
 		logrus.Errorf("[controller.user.Register] %v", err)
 		Response(c, http.StatusBadRequest, "注册失败", nil)

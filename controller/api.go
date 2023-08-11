@@ -14,12 +14,10 @@ func Router(r *gin.Engine) {
 			user.GET("/login", WsHandler)
 			user.POST("/register", Register)
 		}
-
 		group := api.Group("/group")
 		{
 			group.POST("/create", CreateGroup)
+			group.POST("/join", JoinGroup)
 		}
-
 	}
-
 }

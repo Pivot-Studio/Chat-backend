@@ -13,6 +13,8 @@ type DBService struct {
 	mysql *gorm.DB
 }
 
+var db *gorm.DB
+
 func init() {
 	// init mysql
 	var err error
@@ -29,6 +31,7 @@ func init() {
 	DB.mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true, // 禁用默认事务
 	})
+	db = DB.mysql
 
 	if err != nil {
 		panic(err)
