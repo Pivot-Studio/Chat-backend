@@ -1,6 +1,9 @@
 package dao
 
-import "chat/model"
+import (
+	"chat/model"
+	"gorm.io/gorm"
+)
 
 func (db *DBService) GetMemberGroupID(UserID uint) (GroupID []uint, err error) {
 	// todo: 用redis缓存
@@ -31,5 +34,20 @@ func (db DBService) AddNewUserToGroup(user *model.User, group *model.Group, role
 	err := db.mysql.
 		Table("GroupMembers").
 		Create(groupMember).Error
+	return err
+}
+
+func (db DBService) GetGroupUsers(groupID uint) (members *[]model.GroupMember, err error) {
+	err = db.mysql.
+		Table("GroupMembers").
+		Where("group_id = ?", groupID).
+		Find(members).Error
+	return
+}
+
+func (db DBService) IncrGroupUserNum(groupID uint) error {
+	err := db.mysql.Table("groups").
+		Where("group_id = ?", groupID).
+		Update("mem_num", gorm.Expr("mem_num + 1")).Error
 	return err
 }

@@ -15,7 +15,7 @@ type Group struct {
 	Name         string
 	Avatar       string
 	Introduction string
-	MemNum       uint
+	MemNum       uint `gorm:"mem_num"`
 }
 
 type JoinGroupParam struct {
