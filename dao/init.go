@@ -7,7 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
-var Mysql *gorm.DB
+var DB *DBService
+
+type DBService struct {
+	mysql *gorm.DB
+}
+
+var db *gorm.DB
 
 func init() {
 	// init mysql
@@ -22,9 +28,11 @@ func init() {
 		"%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local",
 		MysqlUsername, MysqlPassword, MysqlHost, MysqlPort, MysqlDatabase)
 
-	Mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	DB.mysql, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true, // 禁用默认事务
 	})
+	db = DB.mysql
+
 	if err != nil {
 		panic(err)
 	}

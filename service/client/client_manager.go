@@ -89,7 +89,7 @@ func LoginEvent(client *Client) {
 	CM.ClientLock.Unlock()
 
 	// 查库得到用户所在的roomId
-	rooms, err := dao.GetMemberGroupID(client.UserID)
+	rooms, err := dao.DB.GetMemberGroupID(client.UserID)
 	if err != nil {
 		return
 	}
@@ -122,7 +122,7 @@ func LoginEvent(client *Client) {
 // LogoutEvent 退出事件
 func LogoutEvent(client *Client) {
 	// 退出rooms
-	roomIDs, err := dao.GetMemberGroupID(client.UserID)
+	roomIDs, err := dao.DB.GetMemberGroupID(client.UserID)
 	if err != nil {
 		logrus.Errorf("LogoutEvent:GetMemberGroupID ClientID:%v_%v, error: %v",
 			client.UserID, client.AppID, err)
